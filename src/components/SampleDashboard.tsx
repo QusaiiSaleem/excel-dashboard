@@ -6,7 +6,11 @@ import { Pie, Line } from 'react-chartjs-2';
 import { useBankGuarantees } from '@/hooks/useBankGuarantees';
 import { useStatistics } from '@/hooks/useStatistics';
 import AddGuaranteeForm from './AddGuaranteeForm';
+import CSVImportModal from './CSVImportModal';
+import EditGuaranteeModal from './EditGuaranteeModal';
+import DeleteConfirmModal from './DeleteConfirmModal';
 import { exportToCSV, downloadCSVTemplate } from '@/lib/csvUtils';
+import type { BankGuarantee } from '@/lib/supabase/database';
 
 // Register Chart.js components
 ChartJS.register(
@@ -25,6 +29,9 @@ const SampleDashboard = () => {
   const { guarantees, loading: guaranteesLoading, error: guaranteesError, refresh } = useBankGuarantees();
   const { statistics, loading: statsLoading, error: statsError } = useStatistics();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [editingGuarantee, setEditingGuarantee] = useState<BankGuarantee | null>(null);
+  const [deletingGuarantee, setDeletingGuarantee] = useState<BankGuarantee | null>(null);
 
   const loading = guaranteesLoading || statsLoading;
   const error = guaranteesError || statsError;
@@ -227,6 +234,13 @@ const SampleDashboard = () => {
                 >
                   تحميل قالب
                 </button>
+                
+                <button
+                  onClick={() => setShowImportModal(true)}
+                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"
+                >
+                  استيراد CSV
+                </button>
               </div>
             </div>
             
@@ -241,6 +255,7 @@ const SampleDashboard = () => {
                     <th className="p-4 text-right font-semibold text-[#2c3e50] border-b-2 border-gray-200">تاريخ الانتهاء</th>
                     <th className="p-4 text-right font-semibold text-[#2c3e50] border-b-2 border-gray-200">الحالة</th>
                     <th className="p-4 text-right font-semibold text-[#2c3e50] border-b-2 border-gray-200">البنك</th>
+                    <th className="p-4 text-right font-semibold text-[#2c3e50] border-b-2 border-gray-200">الإجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -263,6 +278,24 @@ const SampleDashboard = () => {
                         </span>
                       </td>
                       <td className="p-3 border-b border-gray-100">{guarantee.bank_name}</td>
+                      <td className="p-3 border-b border-gray-100">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setEditingGuarantee(guarantee)}
+                            className="text-blue-600 hover:text-blue-800 text-sm px-2 py-1 rounded border border-blue-200 hover:bg-blue-50 transition-colors"
+                            title="تعديل"
+                          >
+                            ✏️ تعديل
+                          </button>
+                          <button
+                            onClick={() => setDeletingGuarantee(guarantee)}
+                            className="text-red-600 hover:text-red-800 text-sm px-2 py-1 rounded border border-red-200 hover:bg-red-50 transition-colors"
+                            title="حذف"
+                          >
+                            🗑️ حذف
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -270,6 +303,36 @@ const SampleDashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Modals */}
+        <CSVImportModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          onSuccess={() => {
+            refresh()
+            setShowImportModal(false)
+          }}
+        />
+
+        <EditGuaranteeModal
+          guarantee={editingGuarantee}
+          isOpen={!!editingGuarantee}
+          onClose={() => setEditingGuarantee(null)}
+          onSuccess={() => {
+            refresh()
+            setEditingGuarantee(null)
+          }}
+        />
+
+        <DeleteConfirmModal
+          guarantee={deletingGuarantee}
+          isOpen={!!deletingGuarantee}
+          onClose={() => setDeletingGuarantee(null)}
+          onSuccess={() => {
+            refresh()
+            setDeletingGuarantee(null)
+          }}
+        />
       </div>
     </div>
   );
