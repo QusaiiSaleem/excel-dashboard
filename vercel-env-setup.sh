@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "Adding Supabase environment variables to Vercel..."
+
+# Add NEXT_PUBLIC_SUPABASE_URL
+echo "https://mwiqvjwleffwdwcruahg.supabase.co" | vercel env add NEXT_PUBLIC_SUPABASE_URL production
+
+# Add NEXT_PUBLIC_SUPABASE_ANON_KEY
+echo "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13aXF2andsZWZmd2R3Y3J1YWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1NTYzMzYsImV4cCI6MjA3MDEzMjMzNn0.Sh2hSi_yv-HDGTahgyZk0_9e_atC-hVgmjp7IzIRDmA" | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
+
+# Add SUPABASE_SERVICE_ROLE_KEY
+echo "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13aXF2andsZWZmd2R3Y3J1YWhnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDU1NjMzNiwiZXhwIjoyMDcwMTMyMzM2fQ.SZh7mNv_ypE8rr6Pz0oqlWSL2SUI7Qg39zwzDJSkP6k" | vercel env add SUPABASE_SERVICE_ROLE_KEY production
+
+echo "Environment variables added successfully!"

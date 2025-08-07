@@ -8,8 +8,16 @@ export type BankGuaranteeUpdate = Database['public']['Tables']['bank_guarantees'
 export class BankGuaranteeService {
   private supabase = createClient()
 
+  private checkConnection() {
+    if (!this.supabase) {
+      throw new Error('Supabase client not initialized. Please check environment variables.')
+    }
+    return this.supabase
+  }
+
   async getAll() {
-    const { data, error } = await this.supabase
+    const supabase = this.checkConnection()
+    const { data, error } = await supabase
       .from('bank_guarantees')
       .select('*')
       .order('created_at', { ascending: false })
@@ -19,7 +27,8 @@ export class BankGuaranteeService {
   }
 
   async getById(id: string) {
-    const { data, error } = await this.supabase
+    const supabase = this.checkConnection()
+    const { data, error } = await supabase
       .from('bank_guarantees')
       .select('*')
       .eq('id', id)
@@ -30,7 +39,8 @@ export class BankGuaranteeService {
   }
 
   async create(guarantee: BankGuaranteeInsert) {
-    const { data, error } = await this.supabase
+    const supabase = this.checkConnection()
+    const { data, error } = await supabase
       .from('bank_guarantees')
       .insert(guarantee)
       .select()
@@ -41,7 +51,8 @@ export class BankGuaranteeService {
   }
 
   async update(id: string, guarantee: BankGuaranteeUpdate) {
-    const { data, error } = await this.supabase
+    const supabase = this.checkConnection()
+    const { data, error } = await supabase
       .from('bank_guarantees')
       .update(guarantee)
       .eq('id', id)
@@ -53,7 +64,8 @@ export class BankGuaranteeService {
   }
 
   async delete(id: string) {
-    const { error } = await this.supabase
+    const supabase = this.checkConnection()
+    const { error } = await supabase
       .from('bank_guarantees')
       .delete()
       .eq('id', id)
@@ -66,7 +78,8 @@ export class BankGuaranteeService {
     new: BankGuarantee | null
     old: BankGuarantee | null
   }) => void) {
-    return this.supabase
+    const supabase = this.checkConnection()
+    return supabase
       .channel('bank_guarantees_changes')
       .on(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -82,7 +95,8 @@ export class BankGuaranteeService {
   }
 
   async getStatistics() {
-    const { data, error } = await this.supabase
+    const supabase = this.checkConnection()
+    const { data, error } = await supabase
       .from('bank_guarantees')
       .select('status, guarantee_type, value')
     
